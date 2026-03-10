@@ -135,4 +135,5 @@ async def test_transport_enum():
     """Test Transport enum values."""
     assert Transport.MEMORY.value == "memory"
     assert Transport.STDIO.value == "stdio"
+    assert Transport.SSE.value == "sse"
     assert Transport.HTTP.value == "http"

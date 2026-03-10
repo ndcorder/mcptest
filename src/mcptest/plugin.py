@@ -31,7 +31,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--mcp-transport",
         metavar="TRANSPORT",
         default="memory",
-        choices=["memory", "stdio", "http"],
+        choices=["memory", "stdio", "sse", "http"],
         help="MCP transport to use for testing (default: memory).",
     )
     group.addoption(
@@ -91,6 +91,22 @@ def mcp_client(mcp_transport: Transport):
         return MCPTestClient(server, transport=t, **kwargs)
 
     return _factory
+
+
+@pytest.fixture
+def mcp_server():
+    """Override this fixture to provide the MCP server under test.
+
+    Usage:
+        @pytest.fixture
+        def mcp_server():
+            server = FastMCP("my-server")
+            @server.tool()
+            def my_tool(x: int) -> int:
+                return x * 2
+            return server
+    """
+    return None
 
 
 @pytest.fixture

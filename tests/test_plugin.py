@@ -40,3 +40,8 @@ async def test_mcp_conformance_fixture(mcp_conformance_suite, sample_server):
     suite = mcp_conformance_suite(sample_server)
     result = await suite.run_all()
     assert result.passed
+
+
+def test_mcp_server_fixture(mcp_server):
+    """Test that the mcp_server fixture exists and defaults to None."""
+    assert mcp_server is None

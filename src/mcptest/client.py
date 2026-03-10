@@ -65,7 +65,7 @@ class MCPTestClient:
                 finally:
                     self._session = None
                     self._connected = False
-        elif self._transport == Transport.HTTP:
+        elif self._transport in (Transport.SSE, Transport.HTTP):
             async with self._connect_http() as session:
                 self._session = session
                 self._connected = True
@@ -127,8 +127,7 @@ class MCPTestClient:
         """List available tools on the server."""
         self._check_connected()
         if self._session is not None:
-            result = self._session
-            resp = await result.list_tools()
+            resp = await self._session.list_tools()
             tools = resp.tools
         else:
             server = self._server

@@ -10,4 +10,5 @@ class Transport(enum.Enum):
 
     MEMORY = "memory"
     STDIO = "stdio"
+    SSE = "sse"
     HTTP = "http"
