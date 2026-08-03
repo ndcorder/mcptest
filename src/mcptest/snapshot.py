@@ -21,10 +21,14 @@ def _serialize_result(result: CallToolResult) -> dict[str, Any]:
         else:
             content.append({"type": getattr(c, "type", "unknown")})
     data: dict[str, Any] = {"content": content}
-    if result.isError:
+    is_error = getattr(result, "is_error", False) or getattr(result, "isError", False)
+    if is_error:
         data["isError"] = True
-    if result.structuredContent is not None:
-        data["structuredContent"] = result.structuredContent
+    structured_content = getattr(result, "structured_content", None)
+    if structured_content is None:
+        structured_content = getattr(result, "structuredContent", None)
+    if structured_content is not None:
+        data["structuredContent"] = structured_content
     return data
 
 

@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import pytest
-from mcp.server.fastmcp import FastMCP
+from mcp.server import MCPServer
 
 from mcptest.conformance import ConformanceSuite, _build_minimal_args
 
 
 @pytest.mark.asyncio
-async def test_conformance_all_pass(sample_server: FastMCP):
+async def test_conformance_all_pass(sample_server: MCPServer):
     """Test that the conformance suite passes for a well-behaved server."""
     suite = ConformanceSuite(sample_server)
     result = await suite.run_all()
@@ -19,7 +19,7 @@ async def test_conformance_all_pass(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_conformance_empty_server(empty_server: FastMCP):
+async def test_conformance_empty_server(empty_server: MCPServer):
     """Test conformance suite on a server with no tools."""
     suite = ConformanceSuite(empty_server)
     result = await suite.run_all()
@@ -27,7 +27,7 @@ async def test_conformance_empty_server(empty_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_conformance_list_tools(sample_server: FastMCP):
+async def test_conformance_list_tools(sample_server: MCPServer):
     """Test the list_tools conformance check individually."""
     suite = ConformanceSuite(sample_server)
     result = await suite.test_list_tools()
@@ -36,7 +36,7 @@ async def test_conformance_list_tools(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_conformance_unknown_tool(sample_server: FastMCP):
+async def test_conformance_unknown_tool(sample_server: MCPServer):
     """Test the unknown_tool conformance check."""
     suite = ConformanceSuite(sample_server)
     result = await suite.test_unknown_tool()
@@ -44,7 +44,7 @@ async def test_conformance_unknown_tool(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_conformance_tool_schema(sample_server: FastMCP):
+async def test_conformance_tool_schema(sample_server: MCPServer):
     """Test the tool schema validation check."""
     suite = ConformanceSuite(sample_server)
     result = await suite.test_tool_schema_valid()
@@ -52,7 +52,7 @@ async def test_conformance_tool_schema(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_conformance_summary(sample_server: FastMCP):
+async def test_conformance_summary(sample_server: MCPServer):
     """Test that the summary output is formatted correctly."""
     suite = ConformanceSuite(sample_server)
     result = await suite.run_all()

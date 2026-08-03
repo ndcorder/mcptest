@@ -81,7 +81,7 @@ def mcp_client(mcp_transport: Transport):
 
     Usage:
         def test_my_tool(mcp_client):
-            server = FastMCP("test")
+            server = MCPServer("test")
             client = mcp_client(server)
             # client is an MCPTestClient ready for use in async with client.connect()
     """
@@ -100,7 +100,7 @@ def mcp_server():
     Usage:
         @pytest.fixture
         def mcp_server():
-            server = FastMCP("my-server")
+            server = MCPServer("my-server")
             @server.tool()
             def my_tool(x: int) -> int:
                 return x * 2

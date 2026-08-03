@@ -68,7 +68,9 @@ class Recorder:
                     content_list.append({"type": getattr(c, "type", "unknown")})
             return {
                 "content": content_list,
-                "isError": result.isError if result.isError else False,
+                "isError": bool(
+                    getattr(result, "is_error", False) or getattr(result, "isError", False)
+                ),
             }
         if isinstance(result, list):
             return {"items": result}

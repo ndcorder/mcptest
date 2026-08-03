@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from mcp.server.fastmcp import FastMCP
+from mcp.server import MCPServer
 from mcp.types import TextContent
 
 from mcptest.client import MCPTestClient
@@ -11,7 +11,7 @@ from mcptest.transports import Transport
 
 
 @pytest.mark.asyncio
-async def test_call_tool_add(sample_server: FastMCP):
+async def test_call_tool_add(sample_server: MCPServer):
     """Test calling a tool that adds two numbers."""
     client = MCPTestClient(sample_server)
     async with client.connect():
@@ -21,7 +21,7 @@ async def test_call_tool_add(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_call_tool_greet(sample_server: FastMCP):
+async def test_call_tool_greet(sample_server: MCPServer):
     """Test calling a tool that greets by name."""
     client = MCPTestClient(sample_server)
     async with client.connect():
@@ -31,7 +31,7 @@ async def test_call_tool_greet(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_list_tools(sample_server: FastMCP):
+async def test_list_tools(sample_server: MCPServer):
     """Test listing all available tools."""
     client = MCPTestClient(sample_server)
     async with client.connect():
@@ -44,7 +44,7 @@ async def test_list_tools(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_list_resources(sample_server: FastMCP):
+async def test_list_resources(sample_server: MCPServer):
     """Test listing all available resources."""
     client = MCPTestClient(sample_server)
     async with client.connect():
@@ -54,7 +54,7 @@ async def test_list_resources(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_read_resource(sample_server: FastMCP):
+async def test_read_resource(sample_server: MCPServer):
     """Test reading a resource."""
     client = MCPTestClient(sample_server)
     async with client.connect():
@@ -63,7 +63,7 @@ async def test_read_resource(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_list_prompts(sample_server: FastMCP):
+async def test_list_prompts(sample_server: MCPServer):
     """Test listing all available prompts."""
     client = MCPTestClient(sample_server)
     async with client.connect():
@@ -73,7 +73,7 @@ async def test_list_prompts(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_get_prompt(sample_server: FastMCP):
+async def test_get_prompt(sample_server: MCPServer):
     """Test getting a prompt."""
     client = MCPTestClient(sample_server)
     async with client.connect():
@@ -83,7 +83,7 @@ async def test_get_prompt(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_tool_error_handling(sample_server: FastMCP):
+async def test_tool_error_handling(sample_server: MCPServer):
     """Test that tool errors are propagated."""
     client = MCPTestClient(sample_server)
     async with client.connect():
@@ -92,7 +92,7 @@ async def test_tool_error_handling(sample_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_unknown_tool_raises(sample_server: FastMCP):
+async def test_unknown_tool_raises(sample_server: MCPServer):
     """Test that calling a nonexistent tool raises an error."""
     client = MCPTestClient(sample_server)
     async with client.connect():
@@ -103,7 +103,7 @@ async def test_unknown_tool_raises(sample_server: FastMCP):
 @pytest.mark.asyncio
 async def test_not_connected_raises():
     """Test that calling methods without connecting raises RuntimeError."""
-    server = FastMCP("test")
+    server = MCPServer("test")
     client = MCPTestClient(server)
     with pytest.raises(RuntimeError, match="not connected"):
         await client.call_tool("test", {})
@@ -112,7 +112,7 @@ async def test_not_connected_raises():
 
 
 @pytest.mark.asyncio
-async def test_empty_server_list_tools(empty_server: FastMCP):
+async def test_empty_server_list_tools(empty_server: MCPServer):
     """Test listing tools on a server with no tools."""
     client = MCPTestClient(empty_server)
     async with client.connect():
@@ -121,7 +121,7 @@ async def test_empty_server_list_tools(empty_server: FastMCP):
 
 
 @pytest.mark.asyncio
-async def test_get_text_content(sample_server: FastMCP):
+async def test_get_text_content(sample_server: MCPServer):
     """Test extracting text content from a CallToolResult."""
     client = MCPTestClient(sample_server)
     async with client.connect():

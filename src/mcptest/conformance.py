@@ -5,7 +5,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from mcp.server.fastmcp import FastMCP
+try:
+    from mcp.server import MCPServer
+except ImportError:  # MCP 1.x
+    from mcp.server.fastmcp import FastMCP as MCPServer
 
 from mcptest.client import MCPTestClient
 from mcptest.transports import Transport
@@ -63,7 +66,7 @@ class ConformanceSuite:
 
     def __init__(
         self,
-        server: FastMCP,
+        server: MCPServer,
         transport: Transport = Transport.MEMORY,
     ) -> None:
         self._server = server
@@ -154,7 +157,7 @@ class ConformanceSuite:
             async with client.connect():
                 try:
                     result = await client.call_tool("__nonexistent_tool_12345__", {})
-                    if result.isError:
+                    if getattr(result, "is_error", False) or getattr(result, "isError", False):
                         return ConformanceResult(
                             "unknown_tool", True, "Correctly returned isError for unknown tool"
                         )

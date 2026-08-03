@@ -8,7 +8,6 @@ from typing import Any
 
 from mcp import ClientSession
 from mcp.client.stdio import StdioServerParameters, stdio_client
-from mcp.server.fastmcp import FastMCP
 from mcp.types import (
     CallToolResult,
     GetPromptResult,
@@ -17,6 +16,11 @@ from mcp.types import (
     TextResourceContents,
 )
 from pydantic import AnyUrl
+
+try:
+    from mcp.server import MCPServer
+except ImportError:  # MCP 1.x
+    from mcp.server.fastmcp import FastMCP as MCPServer
 
 from mcptest.transports import Transport
 
@@ -35,7 +39,7 @@ class MCPTestClient:
 
     def __init__(
         self,
-        server: FastMCP | str,
+        server: MCPServer | str,
         transport: Transport = Transport.MEMORY,
         server_url: str = "http://localhost:8000/mcp",
     ) -> None:
@@ -49,8 +53,8 @@ class MCPTestClient:
     async def connect(self):
         """Connect to the MCP server and yield self as a context manager."""
         if self._transport == Transport.MEMORY:
-            if not isinstance(self._server, FastMCP):
-                raise TypeError("In-memory transport requires a FastMCP server instance.")
+            if not isinstance(self._server, MCPServer):
+                raise TypeError("In-memory transport requires an MCP server instance.")
             self._connected = True
             try:
                 yield self
@@ -83,9 +87,9 @@ class MCPTestClient:
         if isinstance(self._server, str):
             command = sys.executable
             args = [self._server]
-        elif isinstance(self._server, FastMCP):
+        elif isinstance(self._server, MCPServer):
             raise TypeError(
-                "Stdio transport requires a server script path (str), not a FastMCP instance."
+                "Stdio transport requires a server script path (str), not an MCP server instance."
             )
         else:
             command = sys.executable
@@ -117,10 +121,13 @@ class MCPTestClient:
         args = arguments or {}
         if self._session is not None:
             return await self._session.call_tool(name, args)
-        # In-memory: call FastMCP directly
+        # In-memory: call the high-level MCP server directly.
         server = self._server
-        assert isinstance(server, FastMCP)
-        content_blocks, structured = await server.call_tool(name, args)
+        assert isinstance(server, MCPServer)
+        result = await server.call_tool(name, args)
+        if isinstance(result, CallToolResult):
+            return result
+        content_blocks, structured = result
         return CallToolResult(content=list(content_blocks), structuredContent=structured)
 
     async def list_tools(self) -> list[dict[str, Any]]:
@@ -131,10 +138,14 @@ class MCPTestClient:
             tools = resp.tools
         else:
             server = self._server
-            assert isinstance(server, FastMCP)
+            assert isinstance(server, MCPServer)
             tools = await server.list_tools()
         return [
-            {"name": t.name, "description": t.description, "inputSchema": t.inputSchema}
+            {
+                "name": t.name,
+                "description": t.description,
+                "inputSchema": getattr(t, "input_schema", None) or t.inputSchema,
+            }
             for t in tools
         ]
 
@@ -146,7 +157,7 @@ class MCPTestClient:
             resources = resp.resources
         else:
             server = self._server
-            assert isinstance(server, FastMCP)
+            assert isinstance(server, MCPServer)
             resources = await server.list_resources()
         return [
             {"uri": str(r.uri), "name": r.name, "description": r.description} for r in resources
@@ -158,13 +169,13 @@ class MCPTestClient:
         parsed_uri = AnyUrl(uri)
         if self._session is not None:
             return await self._session.read_resource(parsed_uri)
-        # In-memory: call FastMCP directly, convert to ReadResourceResult
+        # In-memory: call the high-level MCP server directly and convert the result.
         server = self._server
-        assert isinstance(server, FastMCP)
+        assert isinstance(server, MCPServer)
         raw_contents = await server.read_resource(uri)
         converted = [
             TextResourceContents(
-                uri=parsed_uri,
+                uri=uri,
                 text=c.content if hasattr(c, "content") else str(c),
                 mimeType=getattr(c, "mime_type", "text/plain"),
             )
@@ -180,7 +191,7 @@ class MCPTestClient:
             prompts = resp.prompts
         else:
             server = self._server
-            assert isinstance(server, FastMCP)
+            assert isinstance(server, MCPServer)
             prompts = await server.list_prompts()
         return [{"name": p.name, "description": p.description} for p in prompts]
 
@@ -192,9 +203,9 @@ class MCPTestClient:
         args = arguments or {}
         if self._session is not None:
             return await self._session.get_prompt(name, args)
-        # In-memory: call FastMCP directly
+        # In-memory: call the high-level MCP server directly.
         server = self._server
-        assert isinstance(server, FastMCP)
+        assert isinstance(server, MCPServer)
         return await server.get_prompt(name, args)
 
     def get_text_content(self, result: CallToolResult) -> str:

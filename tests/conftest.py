@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import pytest
-from mcp.server.fastmcp import FastMCP
+from mcp.server import MCPServer
 
 
 @pytest.fixture
-def sample_server() -> FastMCP:
+def sample_server() -> MCPServer:
     """A sample MCP server with tools, resources, and prompts for testing."""
-    server = FastMCP("test-server")
+    server = MCPServer("test-server")
 
     @server.tool()
     def add(a: int, b: int) -> int:
@@ -42,6 +42,6 @@ def sample_server() -> FastMCP:
 
 
 @pytest.fixture
-def empty_server() -> FastMCP:
+def empty_server() -> MCPServer:
     """An MCP server with no tools, resources, or prompts."""
-    return FastMCP("empty-server")
+    return MCPServer("empty-server")

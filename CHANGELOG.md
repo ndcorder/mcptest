@@ -2,6 +2,19 @@
 
 All notable changes to pytest-mcptest will be documented in this file.
 
+## [0.2.0] — 2026-08-03
+
+### Added
+
+- Compatibility with the Model Context Protocol Python SDK v2 `MCPServer` API.
+- Backward-compatible handling for MCP SDK v1 `FastMCP` servers and response objects.
+
+### Changed
+
+- Tool, recording, snapshot, and conformance helpers now accept both snake_case
+  and legacy camelCase MCP response fields.
+- Tool-call helpers support both v1 tuple results and v2 `CallToolResult` values.
+
 ## [0.1.0] — 2026-03-10
 
 First release of pytest-mcptest — a pytest plugin for testing MCP servers without spinning up an LLM.
