@@ -27,15 +27,18 @@ from mcp.server.fastmcp import FastMCP
 # Your server under test
 server = FastMCP("my-server")
 
+
 @server.tool()
 def search(query: str) -> str:
     """Search for something."""
     return f"Results for: {query}"
 
+
 # Test it
 @pytest.fixture
 def my_server():
     return server
+
 
 @pytest.mark.asyncio
 async def test_search_tool(mcp_client, my_server):
@@ -136,6 +139,7 @@ Assert tool responses match stored snapshots with configurable field ignoring.
 
 ```python
 from mcptest import assert_matches_snapshot
+
 
 @pytest.mark.asyncio
 async def test_tool_snapshot(mcp_client, my_server):
